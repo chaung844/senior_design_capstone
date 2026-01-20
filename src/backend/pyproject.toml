@@ -4,4 +4,6 @@ version = "0.1.0"
 description = "vlm vllm pipeline backend"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "vllm>=0.13.0",
+]
