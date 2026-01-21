@@ -16,7 +16,7 @@ Analyze the bank statement image and extract **ALL transactions** as a YAML arra
 5. **NEVER** convert `mcc` to text or add extra fields.
 
 **Example output (DO NOT INCLUDE IN OUTPUT):**
-aml
+```yaml
 - posting_date: "2023-10-05"
   transaction_date: "2023-10-03"
   description: "STARBUCKS 12345 NYC"
@@ -29,3 +29,4 @@ aml
   reference: "INV-2023"
   mcc: ""
   charge: "100.00"
+```
