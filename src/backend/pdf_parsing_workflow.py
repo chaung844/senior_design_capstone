@@ -3,6 +3,13 @@ import sys
 from vllm import LLM, SamplingParams
 from pdf2image import convert_from_path
 
+# check if colab environment
+is_colab = 'google.colab' in sys.modules
+if is_colab:
+    os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
+    os.environ['VLLM_NO_USAGE_STATS'] = '1'
+    os.environ['NCCL_DEBUG'] = 'INFO'
+
 
 # Model Configuration
 # model_name = "Qwen/Qwen3-VL-8B-Instruct-FP8"  
@@ -22,7 +29,7 @@ else:
             tensor_parallel_size=1,
             allowed_local_media_path=allowed_path,
             dtype="bfloat16",
-            # enforce_eager=True  # Enable for colab compatibility
+            enforce_eager=is_colab  # Enable for colab compatibility
         )
         print("(*) Model Loaded Successfully!")
     except Exception as e:
