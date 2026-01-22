@@ -3,10 +3,10 @@ Analyze the bank statement image and extract **ALL transactions** as a YAML arra
 **Extract these fields for EVERY transaction row (in this order):**
 - `posting_date`: Date when transaction posted to account (YYYY-MM-DD). If ambiguous, use original format (e.g., "Oct 5, 2023" → "2023-10-05").
 - `transaction_date`: Date transaction occurred (YYYY-MM-DD). Same format rules as `posting_date`.
-- `description`: **Exact** text from the description column (e.g., "STARBUCKS 12345 NYC" → keep as-is).
-- `reference`: **Exact** reference ID (e.g., "REF: TXN-789" → "TXN-789", **not** "REF: TXN-789").
+- `description`: **Exact** text from the description column before the reference ID number (e.g., "STARBUCKS 12345 NYC" → keep as-is).
+- `reference`: **Exact** reference ID number (e.g., "Reference: 24445713331300340818413" → "24445713331300340818413").
 - `mcc`: **4-digit numeric code only** (e.g., "5812", **not** "5812 - Coffee Shop"). If missing, output `""`.
-- `charge`: **Numeric value with sign** (e.g., `"-15.99"` for debit, `"100.00"` for credit). **Never** omit sign or format as currency.
+- `charge`: **Numeric value with sign** (e.g.,`"100.00"` for credit). **Never** guess charge amount
 
 **Output rules (ABSOLUTE):**
 1. **ONLY** output a valid YAML array. **NO** explanations, headers, or extra text.
@@ -20,13 +20,13 @@ Analyze the bank statement image and extract **ALL transactions** as a YAML arra
 - posting_date: "2023-10-05"
   transaction_date: "2023-10-03"
   description: "STARBUCKS 12345 NYC"
-  reference: "TXN-7890"
+  reference: "24445713331300340818413"
   mcc: "5812"
-  charge: "-15.99"
+  charge: "15.99"
 - posting_date: "2023-10-06"
   transaction_date: "2023-10-06"
-  description: "PAYMENT RECEIVED"
-  reference: "INV-2023"
+  description: "AMZ"
+  reference: "24445713331300340818413"
   mcc: ""
   charge: "100.00"
 ```

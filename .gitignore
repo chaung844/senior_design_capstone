@@ -10,3 +10,6 @@ sample/
 output_images/
 __pycache__/
 safe/
+
+# macOS
+.DS_Store
