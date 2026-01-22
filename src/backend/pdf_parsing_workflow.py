@@ -41,7 +41,7 @@ else:
 
 
 # PDF parsing workflow ===================================================
-pdf_path = "safe/sample/receipt_2.pdf"  
+pdf_path = "safe/sample/receipt_5.pdf"  
 # pdf_path = "safe/sample/receipt_2.pdf"  
 output_folder = "safe/output_images"
 
