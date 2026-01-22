@@ -12,9 +12,11 @@ if is_colab:
 
 
 # Model Configuration
-# model_name = "Qwen/Qwen3-VL-8B-Instruct-FP8"  
-model_name = "Qwen/Qwen3-VL-4B-Instruct"  
+model_name = "Qwen/Qwen3-VL-8B-Instruct-FP8"  
+# model_name = "Qwen/Qwen3-VL-4B-Instruct"  
+# model_name = "PaddlePaddle/PaddleOCR-VL"
 allowed_path = os.path.abspath("safe") # white list directory for file URLs 
+
 
 # Prevent re-initialization in environments like Colab
 if 'llm' in globals():
@@ -24,11 +26,12 @@ else:
     try:
         llm = LLM(
             model=model_name,
-            max_model_len=25096,
-            limit_mm_per_prompt={"image": 4},
+            max_model_len=8096,
+            limit_mm_per_prompt={"image": 2},
             tensor_parallel_size=1,
             allowed_local_media_path=allowed_path,
             dtype="bfloat16",
+            trust_remote_code=True, # for custom models
             enforce_eager=is_colab  # Enable for colab compatibility
         )
         print("(*) Model Loaded Successfully!")
@@ -38,7 +41,7 @@ else:
 
 
 # PDF parsing workflow ===================================================
-pdf_path = "safe/sample/bankstatement_2.pdf"  
+pdf_path = "safe/sample/receipt_2.pdf"  
 # pdf_path = "safe/sample/receipt_2.pdf"  
 output_folder = "safe/output_images"
 
@@ -65,8 +68,8 @@ except Exception as e:
 
 # data input
 image_rel_path = "safe/output_images/page_1.jpg"
-instruction_path = "prompts/bank_statement_parsing_instruction.md"
-# instruction_path = "prompts/receipts_parsing_instruction.md"
+# instruction_path = "prompts/bank_statement_parsing_instruction.md"
+instruction_path = "prompts/receipts_parsing_instruction.md"
 default_user_query = "Extract all of the transactions from this bank statement."
 image_urls = []
 
@@ -97,16 +100,16 @@ if image_urls:
             "role": "user",
             "content": [
                 {"type": "image_url", "image_url": {"url": image_urls[0]}},
-                {"type": "image_url", "image_url": {"url": image_urls[1]}},
-                {"type": "image_url", "image_url": {"url": image_urls[2]}},
-                {"type": "image_url", "image_url": {"url": image_urls[3]}},
+                # {"type": "image_url", "image_url": {"url": image_urls[1]}},
+                # {"type": "image_url", "image_url": {"url": image_urls[2]}},
+                # {"type": "image_url", "image_url": {"url": image_urls[3]}},
                 {"type": "text", "text": instruction_text},
             ],
         }
     ]
 
     sampling_params = SamplingParams(
-        temperature=0.7,
+        temperature=0.0,
         top_p=0.8,
         repetition_penalty=1.05,
         max_tokens=8000,
