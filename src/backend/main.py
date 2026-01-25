@@ -3,11 +3,11 @@ from vllm import LLM, SamplingParams
 
 # --- CONFIGURATION ---
 model_name = "Qwen/Qwen3-VL-8B-Instruct-FP8" 
-image_rel_path = "sample/receipt_6.jpg"
+image_rel_path = "safe/sample/receipt_6.jpg"
 instruction_path = "prompts/receipts_parsing_instruction.md"
 
 # whitelist directory for file URLs
-allowed_path = os.path.abspath("sample")
+allowed_path = os.path.abspath("safe")
 
 # setup
 llm = LLM(
@@ -21,10 +21,10 @@ llm = LLM(
 
 # sampling parameters
 sampling_params = SamplingParams(
-    temperature=0.7,
+    temperature=0.9,
     top_p=0.8,
-    repetition_penalty=1.05,
-    max_tokens=512,
+    # repetition_penalty=1.05,
+    max_tokens=1024,
 )
 
 # get input data
