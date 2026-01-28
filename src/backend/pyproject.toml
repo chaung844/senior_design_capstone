@@ -12,10 +12,8 @@ dependencies = [
     "pdf2image>=1.17.0",
     "pdfplumber>=0.11.9",
     "python-dotenv>=1.2.1",
-    "vllm>=0.13.0",
+    "vllm>=0.13.0; sys_platform != 'darwin'", # exclude vllm on macOS
 ]
 
 [dependency-groups]
-dev = [
-    "ipykernel>=7.1.0",
-]
+dev = ["ipykernel>=7.1.0"]
