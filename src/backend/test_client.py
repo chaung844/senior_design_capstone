@@ -233,3 +233,8 @@ if __name__ == "__main__":
     --pdf "safe/sample/receipt_4.pdf" \
     --prompt-file "prompts/receipts_parsing_instruction.md"
     """
+
+    """
+    uv run test_client.py \
+    --prompt "Explain Quantum Computing in soccer terms." 
+    """

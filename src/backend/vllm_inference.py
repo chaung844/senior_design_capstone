@@ -13,6 +13,7 @@ MAX_MODEL_LEN = 26096
 N_GPU = 1
 MINUTES = 60  # seconds
 VLLM_PORT = 8000
+MAX_CONCURRENT_REQUESTS = 8
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -49,8 +50,8 @@ app = modal.App("demo-vllm-inference")
         "/root/.cache/vllm": vllm_cache_vol,
     },
 )
-@modal.concurrent(  # how many requests can one replica handle? tune carefully!
-    max_inputs=32
+@modal.concurrent(  # how many requests can one replica handle
+    max_inputs=MAX_CONCURRENT_REQUESTS
 )
 @modal.web_server(port=VLLM_PORT, startup_timeout=10 * MINUTES)
 def serve():
