@@ -1,25 +1,26 @@
 import os
 import sys
-from vllm import LLM, SamplingParams
+
 from pdf2image import convert_from_path
+from vllm import LLM, SamplingParams
 
 # check if colab environment
-is_colab = 'google.colab' in sys.modules
+is_colab = "google.colab" in sys.modules
 if is_colab:
-    os.environ['VLLM_WORKER_MULTIPROC_METHOD'] = 'spawn'
-    os.environ['VLLM_NO_USAGE_STATS'] = '1'
-    os.environ['NCCL_DEBUG'] = 'INFO'
+    os.environ["VLLM_WORKER_MULTIPROC_METHOD"] = "spawn"
+    os.environ["VLLM_NO_USAGE_STATS"] = "1"
+    os.environ["NCCL_DEBUG"] = "INFO"
 
 
 # Model Configuration
-model_name = "Qwen/Qwen3-VL-8B-Instruct-FP8"  
-# model_name = "Qwen/Qwen3-VL-4B-Instruct"  
+model_name = "Qwen/Qwen3-VL-8B-Instruct-FP8"
+# model_name = "Qwen/Qwen3-VL-4B-Instruct"
 # model_name = "PaddlePaddle/PaddleOCR-VL"
-allowed_path = os.path.abspath("safe") # white list directory for file URLs 
+allowed_path = os.path.abspath("safe")  # white list directory for file URLs
 
 
 # Prevent re-initialization in environments like Colab
-if 'llm' in globals():
+if "llm" in globals():
     print("(*) Model is already loaded! Skipping initialization to prevent crash.")
 else:
     print("(*) Initializing vLLM... (This takes a minute)")
@@ -31,8 +32,8 @@ else:
             tensor_parallel_size=1,
             allowed_local_media_path=allowed_path,
             dtype="bfloat16",
-            trust_remote_code=True, # for custom models
-            enforce_eager=is_colab  # Enable for colab compatibility
+            trust_remote_code=True,  # for custom models
+            enforce_eager=is_colab,  # Enable for colab compatibility
         )
         print("(*) Model Loaded Successfully!")
     except Exception as e:
@@ -41,18 +42,18 @@ else:
 
 
 # PDF parsing workflow ===================================================
-pdf_path = "safe/sample/receipt_5.pdf"  
-# pdf_path = "safe/sample/receipt_2.pdf"  
+pdf_path = "safe/sample/receipt_5.pdf"
+# pdf_path = "safe/sample/receipt_2.pdf"
 output_folder = "safe/output_images"
 
 # Create output folder
-os.makedirs(output_folder, exist_ok=True) 
+os.makedirs(output_folder, exist_ok=True)
 print(f"(*) Parsing PDF:  {pdf_path}...")
 
 try:
     # Convert PDF
     images = convert_from_path(pdf_path)
-    
+
     # Save Images
     for i, image in enumerate(images):
         file_name = f"page_{i + 1}.jpg"
@@ -92,7 +93,7 @@ if os.path.exists(instruction_path):
     with open(instruction_path, "r") as file:
         instruction_text = file.read()
 else:
-    instruction_text = default_user_query 
+    instruction_text = default_user_query
 
 if image_urls:
     messages = [
@@ -122,11 +123,12 @@ if image_urls:
         generated_text = output.outputs[0].text
         print(f"\n--- Output ---\n{generated_text}")
     print("(*) Response generation completed.")
-    
+
     # save output to file
-    output_text_path = "safe/generated_responses/parsed_bank_statement_transactions.yaml"
+    output_text_path = (
+        "safe/generated_responses/parsed_bank_statement_transactions.yaml"
+    )
     os.makedirs(os.path.dirname(output_text_path), exist_ok=True)
     with open(output_text_path, "w") as out_file:
         out_file.write(generated_text)
     print(f"(*) Saved generated response to: {output_text_path}")
-    

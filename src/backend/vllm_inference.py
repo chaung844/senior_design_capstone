@@ -1,9 +1,8 @@
-import modal
 import subprocess
-import aiohttp
-from openai import AsyncOpenAI
-import os
+
+import modal
 from dotenv import load_dotenv
+from openai import AsyncOpenAI
 
 # --- config ---
 MODEL_NAME = "Qwen/Qwen3-VL-8B-Instruct-FP8"
@@ -21,7 +20,7 @@ load_dotenv()  # Load environment variables from .env file
 # Using NVIDIA's CUDA image as a base and install vLLM using uv
 vllm_image = (
     modal.Image.from_registry("nvidia/cuda:12.8.0-devel-ubuntu22.04", add_python="3.12")
-    .entrypoint([]) 
+    .entrypoint([])
     .uv_pip_install(  # <--- Using uv for fast remote installation
         "vllm==0.13.0",
         "huggingface-hub==0.36.0",
@@ -37,6 +36,7 @@ vllm_cache_vol = modal.Volume.from_name("vllm-cache", create_if_missing=True)
 app = modal.App("demo-vllm-inference")
 
 # api_key_secret = modal.Secret.from_name("vllm-secret")
+
 
 @app.function(
     image=vllm_image,
@@ -54,9 +54,6 @@ app = modal.App("demo-vllm-inference")
 )
 @modal.web_server(port=VLLM_PORT, startup_timeout=10 * MINUTES)
 def serve():
-    import subprocess
-    import os
-
     # VLLM_API_KEY = os.environ.get("VLLM_API_KEY")
 
     # if not VLLM_API_KEY:
@@ -64,16 +61,23 @@ def serve():
     #     VLLM_API_KEY = "" # Avoid NoneType error in join()
 
     cmd = [
-        "vllm", "serve",
+        "vllm",
+        "serve",
         "--uvicorn-log-level=info",
         MODEL_NAME,
-        "--revision", MODEL_REVISION,
-        "--served-model-name", MODEL_NAME,
+        "--revision",
+        MODEL_REVISION,
+        "--served-model-name",
+        MODEL_NAME,
         "llm",
-        "--host", "0.0.0.0",
-        "--port", str(VLLM_PORT),
-        "--max-model-len", str(MAX_MODEL_LEN),
-        "--gpu-memory-utilization", "0.95",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        str(VLLM_PORT),
+        "--max-model-len",
+        str(MAX_MODEL_LEN),
+        "--gpu-memory-utilization",
+        "0.95",
         # "--api-key", VLLM_API_KEY,
     ]
 
@@ -87,6 +91,7 @@ def serve():
     print(*cmd)
 
     subprocess.Popen(" ".join(cmd), shell=True)
+
 
 @app.local_entrypoint()
 async def test(test_timeout=600, content=None, twice=True):
@@ -119,14 +124,14 @@ async def test(test_timeout=600, content=None, twice=True):
         print(f"\n  (>) Sending query: {msgs[-1]['content']}")
         try:
             stream = await client.chat.completions.create(
-                model=MODEL_NAME, # This must match what you passed to vllm serve
+                model=MODEL_NAME,  # This must match what you passed to vllm serve
                 messages=msgs,
-                stream=True
+                stream=True,
             )
             async for chunk in stream:
                 if chunk.choices[0].delta.content:
                     print(chunk.choices[0].delta.content, end="", flush=True)
-            print() # Newline after stream
+            print()  # Newline after stream
         except Exception as e:
             print(f"    (!) Error: {e}")
 
